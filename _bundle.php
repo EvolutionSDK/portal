@@ -23,6 +23,15 @@ class Bundle {
 	 * @author Robbie Trencheny
 	 */
 	public function _on_framework_loaded() {
+		/**
+		 * Add the site dir to portal locations
+		 */
+		e::configure('portal')->activeAdd('locations', e\site);
+
+		/**
+		 * Add the portal hook
+		 * @author Robbie Trencheney
+		 */
 		e::configure('lhtml')->activeAddKey('hook', ':portal', function() {
 			return function() {
 				$class = __CLASS__;
@@ -35,13 +44,42 @@ class Bundle {
 	}
 
 	/**
+	 * Get all routes for the sitemap
+	 * @author Nate Ferrero
+	 */
+	public function _on_router_sitemap($path) {
+
+		/**
+		 * Get portal paths
+		 */
+		$searchdirs = e::configure('portal')->locations;
+		$all = array();
+
+		/**
+		 * Look in all portals
+		 */
+		foreach($searchdirs as $dir) {
+			foreach(glob("$dir/portals/*") as $portal) {
+				$name = basename($portal);
+				if($name == 'site')
+					$name = '';
+				else
+					$name = '/'.$name;
+				$map = e::$events->portal_sitemap($path, $portal);
+				$all[$name] = $map;
+			}
+		}
+
+		/**
+		 * Return
+		 */
+		return $all;
+	}
+
+	/**
 	 * Route the portal
 	 */
 	public function _on_router_route($path) {
-		/**
-		 * Add the site dir to portal locations
-		 */
-		e::configure('portal')->activeAdd('locations', e\site);
 		
 		/**
 		 * Check for null first segment
