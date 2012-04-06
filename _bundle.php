@@ -86,6 +86,7 @@ class Bundle {
 	/**
 	 * Route the portal
 	 */
+	public $_on_router_route_order = 'last';
 	public function _on_router_route($path) {
 		
 		/**
