@@ -23,6 +23,13 @@ class Bundle {
 	 * @author Robbie Trencheny
 	 */
 	public function _on_framework_loaded() {
+
+		/**
+		 * Allow portal locations to be added before the site one
+		 * @author Kelly Becker
+		 */
+		e::$events->before_portal_add();
+
 		/**
 		 * Add the site dir to portal locations
 		 */
