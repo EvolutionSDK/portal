@@ -160,32 +160,34 @@ class Bundle {
 			 * Save current portal name
 			 */
 			self::$currentPortalName = $name;
-
 			try {
-				
-				/**
-				 * Route inside of the portal
-				 */
-				e::$events->portal_route($path, $matched, "allow:$matched/portal.yaml");
-				
-				/**
-				 * If nothing found, throw exception
-				 */
-				throw new NotFoundException("Resource `$url` not found in portal `$matched`");
-			}
-
-			/**
-			 * If page not found, try in site portal before giving up
-			 */
-			catch(NotFoundException $e) {
-				if($shifted !== 'site') {
-				 	array_unshift($path, 'site', $shifted);
-				 	try { $this->_on_router_route($path); }
-				 	catch(NotFoundException $void) {
-				 		throw $e;
-				 	}
+				try {
+					
+					/**
+					 * Route inside of the portal
+					 */
+					e::$events->portal_route($path, $matched, "allow:$matched/portal.yaml");
+					
+					/**
+					 * If nothing found, throw exception
+					 */
+					throw new NotFoundException("Resource `$url` not found in portal `$matched`");
 				}
-				else throw $e;
+
+				/**
+				 * If page not found, try in site portal before giving up
+				 */
+				catch(NotFoundException $e) {
+					if($shifted !== 'site') {
+					 	array_unshift($path, 'site', $shifted);
+					 	try { $this->_on_router_route($path); }
+					 	catch(NotFoundException $void) {
+					 		throw $e;
+					 	}
+					}
+					else throw $e;
+				}
+
 			}
 			
 			/**
