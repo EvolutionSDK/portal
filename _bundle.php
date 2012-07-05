@@ -43,9 +43,7 @@ class Bundle {
 			return function() {
 				$class = __CLASS__;
 				$slug = $class::$currentPortalName;
-				return array(
-					'slug' => $slug
-				);
+				return e::portal($slug);
 			};
 		});
 	}
@@ -281,11 +279,13 @@ class PortalHookAccessor {
 	 * Saved path
 	 */
 	private $path;
+	public $slug;
 	
 	/**
 	 * Save path
 	 */
 	public function __construct($path) {
+		$this->slug = $path;
 		$this->path = e\site . '/portals/' . $path;
 		$this->class = '\\Portals\\' . str_replace('/', '\\', $path);
 	}
@@ -319,6 +319,10 @@ class PortalHookAccessor {
 		 * Hook is not defined
 		 */
 		throw new Exception("Portal hook `$hook` is not defined");
+	}
+
+	public function __call($method, $args) {
+		return $this->__get($method);
 	}
 
 }
